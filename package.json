@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@solana/spl-token": "^0.4.13"
+    "@solana/spl-token": "^0.4.13",
+    "dotenv": "^17.2.1"
   }
 }
