@@ -5,7 +5,6 @@ import bs58 from "bs58";
 dotenv.config();
 
 
-console.log("here is the prc---",process.env.RPC_URL!)
 export const connection = new Connection(process.env.RPC_URL!, "finalized");
 export const OG_WALLET = Keypair.fromSecretKey(Uint8Array.from(bs58.decode(process.env.OG_WALLET_SECRET_KEY!)));
 export const mint = new PublicKey("So11111111111111111111111111111111111111112")

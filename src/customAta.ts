@@ -5,21 +5,23 @@ import {
 } from "@solana/spl-token";
 import {
   Keypair,
+  PublicKey,
   SystemProgram,
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js";
 import fs from "fs";
 import bs58 from "bs58";
-import { connection, getBlockhash, mint, OG_WALLET } from "./config";
+import { connection, getBlockhash, OG_WALLET } from "./config";
 
 
-export const createCustomOnCurveAta = async () => {
+export const createCustomOnCurveAta = async (mint:PublicKey):Promise<PublicKey | null > => {
   
     const newPair = Keypair.generate();
   
-    fs.writeFileSync("usdcprivKey.json", JSON.stringify(bs58.encode(newPair.secretKey)));
-  
+    fs.writeFileSync("privKey.json", JSON.stringify(bs58.encode(newPair.secretKey)));
+    console.log("priv key saved!")
+
     console.log("here is the newPair address--", newPair.publicKey.toBase58());
   
     const createItx = SystemProgram.createAccount({
@@ -50,12 +52,19 @@ export const createCustomOnCurveAta = async () => {
     console.log("sending transaction");
   
 
-    const simulations = await connection.simulateTransaction(txs);
-    console.log("here is simulaion--", simulations);
+     try{
+        const simulations = await connection.simulateTransaction(txs);
+        console.log("here is simulaion--", simulations);
+    
+        // const sign = await connection.sendTransaction(txs);
+        // console.log("here is the signature----", sign);
 
-    // const sign = await connection.sendTransaction(txs);
-    // console.log("here is the signature----", sign);
+        return newPair.publicKey;
+     }
+     catch(e){
+        console.log("there is an error--", e);
+
+        return null;
+     }
   };
   
-
-  createCustomOnCurveAta();
