@@ -1,9 +1,11 @@
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import dotenv from "dotenv";
 dotenv.config();
 
 export const connection = new Connection(process.env.RPC_URL!, "finalized");
+export const mint = new PublicKey(process.env.MINT_ADDRESS!);
+export const OG_WALLET = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(process.env.OG_WALLET_SECRET_KEY!)));
 
 export const getBlockhash = async () => {
     const blockhash = await connection.getLatestBlockhash();
@@ -11,7 +13,7 @@ export const getBlockhash = async () => {
 }
 
 
-export const findAssociatedTokenAddress =  (walletAddress:any, tokenMintAddress:any) => {
+export const findAssociatedTokenAddress =  (walletAddress:PublicKey, tokenMintAddress:PublicKey) => {
     return (
        PublicKey.findProgramAddressSync(
         [
