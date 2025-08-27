@@ -17,7 +17,7 @@ import { connection, getBlockhash, OG_WALLET } from "./config";
 
 export const createCustomOnCurveAta = async (mint:PublicKey):Promise<PublicKey | null > => {
   
-    const newPair = Keypair.generate();
+    const newPair = Keypair.generate(); // or any custom keypair search though solana cli (eg - solana-keygen grind --starts-with TTT:1)
   
     fs.writeFileSync("privKey.json", JSON.stringify(bs58.encode(newPair.secretKey)));
     console.log("priv key saved!")

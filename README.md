@@ -1,6 +1,6 @@
-# Custom Off-Curve ATA (Associated Token Account)
+# Custom-ON-Curve-ATA (Associated Token Account)
 
-A Solana TypeScript project demonstrating the creation and management of custom off-curve Associated Token Accounts (ATAs) alongside traditional deterministic ATAs.
+A Solana TypeScript project demonstrating the creation and management of custom on-curve Associated Token Accounts (ATAs) alongside traditional deterministic ATAs.
 
 ## Overview
 
@@ -31,7 +31,7 @@ This project showcases two different approaches to creating token accounts on So
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd CUSTOM-OFFCURVE-ATA
+cd Custom-ON-Curve-ATA
 ```
 
 2. Install dependencies:
