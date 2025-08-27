@@ -4,15 +4,17 @@ A Solana TypeScript project demonstrating the creation and management of custom 
 
 ## Overview
 
-This project showcases two different approaches to creating token accounts on Solana:
+This project showcases two different approaches to creating token accounts on Solana, born from a real-world discovery of a token account with a private key:
 
-1. **Deterministic ATA**: Standard Associated Token Accounts that follow the SPL Token program's deterministic derivation
-2. **Custom Off-Curve ATA**: Custom token accounts created with randomly generated keypairs, allowing for more flexible token account management
+1. **Deterministic ATA (Off-Curve)**: Standard Associated Token Accounts that follow the SPL Token program's deterministic derivation - these have no private keys
+2. **Custom On-Curve ATA**: Custom token accounts created with randomly generated keypairs - these have private keys but are still controlled by the owner wallet
+
+**Key Discovery**: Token accounts can exist both on-curve (with private keys) and off-curve (deterministic), and a single wallet can own multiple token accounts for the same mint. However, even with the private key of an on-curve token account, only the owner wallet can authorize transactions.
 
 ## Features
 
-- ✅ Create deterministic Associated Token Accounts (ATAs)
-- ✅ Create custom off-curve token accounts with random keypairs
+- ✅ Create deterministic Associated Token Accounts (ATAs) - Off-curve, no private keys
+- ✅ Create custom on-curve token accounts with random keypairs - Has private keys
 - ✅ Transfer tokens between custom and deterministic accounts
 - ✅ Close token accounts when no longer needed
 - ✅ Transaction simulation for safety
@@ -82,7 +84,7 @@ const deterministicAta = await createDeterministicAta(mint);
 console.log("Deterministic ATA:", deterministicAta.toBase58());
 ```
 
-#### Custom Off-Curve ATA Creation
+#### Custom On-Curve ATA Creation
 ```typescript
 import { createCustomOnCurveAta } from "./customAta";
 
@@ -112,16 +114,40 @@ The project is configured to work with wrapped SOL (`So1111111111111111111111111
 
 ## Technical Details
 
-### Deterministic ATA
+### The Discovery Story
+This project was born from a fascinating discovery: a friend found a private key with over 15 SOL that couldn't be used for transactions. Upon investigation, it turned out to be a **token account for wrapped SOL (wSOL)** rather than a regular wallet account. This discovery revealed that:
+
+- **Token accounts can have private keys** (on-curve accounts)
+- **A single wallet can own multiple token accounts for the same mint**
+- **Even with the private key, you cannot transact from a token account** - only the owner wallet can authorize transactions
+
+### Deterministic ATA (Off-Curve)
 - Uses the SPL Token program's `getOrCreateAssociatedTokenAccount` function
 - Address is deterministically derived from the owner's public key and mint
-- Follows the standard ATA derivation formula
+- **Off-curve**: Generated using Program Derived Address (PDA) derivation
+- **No private key exists** - controlled entirely by the owner wallet
+- Follows the standard ATA derivation formula: `[owner, TOKEN_PROGRAM_ID, mint]`
 
-### Custom Off-Curve ATA
+### Custom On-Curve ATA
 - Generates a new keypair for the token account
 - Creates a token account at the generated address
+- **On-curve**: Uses a real private key (like regular wallet accounts)
 - Saves the private key to `privKey.json` for future use
+- **Important**: Even with the private key, only the owner wallet can authorize transactions
 - Allows for more flexible token account management
+
+### Real-World Example
+The wallet that sparked this investigation: `9EnbaVoFqvh4vjz5GWzoo5ZSQp2soxp3n4wNjmKSqepA`
+
+This project demonstrates creating two different wSOL token accounts for the same wallet:
+1. **EWZFvXnu1cgGjLnRtLhNkzJNiYzoTAKAzuiLXzdbjLrN** (On-curve custom ATA)
+2. **3YHgh8gyMmtTqamZ6RUmYeeZNebY1MKtbSix68cTAQTy** (Off-curve deterministic ATA)
+
+### Key Insights
+- **On-curve token accounts** have private keys but are still controlled by the owner wallet
+- **Off-curve token accounts** (deterministic ATAs) have no private keys
+- **Multiple token accounts** can exist for the same mint under one wallet
+- **Private key possession** doesn't grant transaction authority for token accounts
 
 ### Transaction Safety
 - All transactions are simulated before execution
@@ -170,11 +196,11 @@ npm test
 ```typescript
 const mint = new PublicKey("So11111111111111111111111111111111111111112");
 
-// Create deterministic ATA
+// Create deterministic ATA (off-curve, no private key)
 const deterministicAta = await createDeterministicAta(mint);
 console.log("Deterministic ATA:", deterministicAta.toBase58());
 
-// Create custom off-curve ATA
+// Create custom on-curve ATA (has private key)
 const customAta = await createCustomOnCurveAta(mint);
 if (customAta) {
     console.log("Custom ATA:", customAta.toBase58());
