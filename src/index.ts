@@ -1,5 +1,5 @@
 import { mint } from "./config";
-import { createCustomOnCurveAta } from "./customAta";
+import { createCustomOnCurveAta } from "./customSplAccount";
 import { createDeterministicAta } from "./deterministicAta"
 
 
@@ -14,12 +14,11 @@ const main = async() => {
 
 
 
-  const customAta = await createCustomOnCurveAta(mint);
+  const customSplTokenAccount = await createCustomOnCurveAta(mint);
 
-  if(customAta){
-    console.log("here is the custom ata for the same mint!---", customAta.toBase58());
+  if(customSplTokenAccount){
+    console.log("here is the custom ata for the same mint!---", customSplTokenAccount.toBase58());
   }
-
 
 }
 

@@ -1,20 +1,20 @@
-# Custom-ON-Curve-ATA (Associated Token Account)
+# Custom-ON-Curve-ATA (Token Account Management)
 
-A Solana TypeScript project demonstrating the creation and management of custom on-curve Associated Token Accounts (ATAs) alongside traditional deterministic ATAs.
+A Solana TypeScript project demonstrating the creation and management of custom on-curve SPL token accounts alongside traditional deterministic Associated Token Accounts (ATAs).
 
 ## Overview
 
 This project showcases two different approaches to creating token accounts on Solana, born from a real-world discovery of a token account with a private key:
 
 1. **Deterministic ATA (Off-Curve)**: Standard Associated Token Accounts that follow the SPL Token program's deterministic derivation - these have no private keys
-2. **Custom On-Curve ATA**: Custom token accounts created with randomly generated keypairs - these have private keys but are still controlled by the owner wallet
+2. **Custom On-Curve Token Account**: Custom SPL token accounts created with randomly generated keypairs - these have private keys but are still controlled by the owner wallet
 
 **Key Discovery**: Token accounts can exist both on-curve (with private keys) and off-curve (deterministic), and a single wallet can own multiple token accounts for the same mint. However, even with the private key of an on-curve token account, only the owner wallet can authorize transactions.
 
 ## Features
 
 - ✅ Create deterministic Associated Token Accounts (ATAs) - Off-curve, no private keys
-- ✅ Create custom on-curve token accounts with random keypairs - Has private keys
+- ✅ Create custom on-curve SPL token accounts with random keypairs - Has private keys
 - ✅ Transfer tokens between custom and deterministic accounts
 - ✅ Close token accounts when no longer needed
 - ✅ Transaction simulation for safety
@@ -53,7 +53,7 @@ src/
 ├── index.ts              # Main entry point
 ├── config.ts             # Configuration and utility functions
 ├── deterministicAta.ts   # Deterministic ATA creation and management
-├── customAta.ts          # Custom off-curve ATA creation
+├── customAta.ts          # Custom on-curve token account creation
 └── ataTransfer.ts        # Token transfer functionality
 ```
 
@@ -71,7 +71,7 @@ npx ts-node src/index.ts
 
 This will:
 1. Create a deterministic ATA for the specified mint
-2. Create a custom off-curve ATA for the same mint
+2. Create a custom on-curve token account for the same mint
 3. Display the addresses of both accounts
 
 ### Key Functions
@@ -84,13 +84,13 @@ const deterministicAta = await createDeterministicAta(mint);
 console.log("Deterministic ATA:", deterministicAta.toBase58());
 ```
 
-#### Custom On-Curve ATA Creation
+#### Custom On-Curve Token Account Creation
 ```typescript
 import { createCustomOnCurveAta } from "./customAta";
 
-const customAta = await createCustomOnCurveAta(mint);
-if (customAta) {
-    console.log("Custom ATA:", customAta.toBase58());
+const customTokenAccount = await createCustomOnCurveAta(mint);
+if (customTokenAccount) {
+    console.log("Custom Token Account:", customTokenAccount.toBase58());
 }
 ```
 
@@ -115,7 +115,7 @@ The project is configured to work with wrapped SOL (`So1111111111111111111111111
 ## Technical Details
 
 ### The Discovery Story
-This project was born from a fascinating discovery: a friend found a private key with over 15 SOL that couldn't be used for transactions. Upon investigation, it turned out to be a **token account for wrapped SOL (wSOL)** rather than a regular wallet account. This discovery revealed that:
+This project was born from a fascinating discovery: a friend found a private key with over 15 SOL that couldn't be used for transactions. Upon investigation, it turned out to be a **token account for wrapped SOL (wSOL)** rather than a regular wallet account. The private key belonged to the token account itself, not the wallet that owned it. This discovery revealed that:
 
 - **Token accounts can have private keys** (on-curve accounts)
 - **A single wallet can own multiple token accounts for the same mint**
@@ -128,7 +128,7 @@ This project was born from a fascinating discovery: a friend found a private key
 - **No private key exists** - controlled entirely by the owner wallet
 - Follows the standard ATA derivation formula: `[owner, TOKEN_PROGRAM_ID, mint]`
 
-### Custom On-Curve ATA
+### Custom On-Curve Token Account
 - Generates a new keypair for the token account
 - Creates a token account at the generated address
 - **On-curve**: Uses a real private key (like regular wallet accounts)
@@ -136,12 +136,12 @@ This project was born from a fascinating discovery: a friend found a private key
 - **Important**: Even with the private key, only the owner wallet can authorize transactions
 - Allows for more flexible token account management
 
-### Real-World Example
-The wallet that sparked this investigation: `9EnbaVoFqvh4vjz5GWzoo5ZSQp2soxp3n4wNjmKSqepA`
-
+### Demo Example
 This project demonstrates creating two different wSOL token accounts for the same wallet:
-1. **EWZFvXnu1cgGjLnRtLhNkzJNiYzoTAKAzuiLXzdbjLrN** (On-curve custom ATA)
-2. **3YHgh8gyMmtTqamZ6RUmYeeZNebY1MKtbSix68cTAQTy** (Off-curve deterministic ATA)
+1. **Custom On-Curve Token Account** (On-curve, has private key)
+2. **Deterministic ATA** (Off-curve, no private key)
+
+*Note: For security reasons, actual account addresses are not displayed in this demo.*
 
 ### Key Insights
 - **On-curve token accounts** have private keys but are still controlled by the owner wallet
@@ -200,17 +200,17 @@ const mint = new PublicKey("So11111111111111111111111111111111111111112");
 const deterministicAta = await createDeterministicAta(mint);
 console.log("Deterministic ATA:", deterministicAta.toBase58());
 
-// Create custom on-curve ATA (has private key)
-const customAta = await createCustomOnCurveAta(mint);
-if (customAta) {
-    console.log("Custom ATA:", customAta.toBase58());
+// Create custom on-curve token account (has private key)
+const customTokenAccount = await createCustomOnCurveAta(mint);
+if (customTokenAccount) {
+    console.log("Custom Token Account:", customTokenAccount.toBase58());
 }
 ```
 
 ### Transferring Tokens
 ```typescript
-// Transfer from custom ATA to deterministic ATA
-await transferFromAcc(customAtaAddress);
+// Transfer from custom token account to deterministic ATA
+await transferFromAcc(customTokenAccountAddress);
 ```
 
 ## Contributing
